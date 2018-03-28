@@ -387,14 +387,35 @@ a {
   align-items: center;
 }
 
+.articles-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  margin: 50px auto;
+
+  padding: 30px 0;
+
+  border-bottom: 3px solid #333;
+  border-top: 3px solid #333;
+}
+
+.articles-header-name {
+  padding-right: 20px;
+}
+
+.articles-header-title {
+  padding-left: 20px;
+}
+
 .articles-list {
-  margin-top: 150px;
+  margin: 100px 80px 80px 80px;
 }
 
 /* Articles at the top of screen on mobile */
 @media screen and (max-width: 768px), screen and (max-device-width: 480px) {
   .articles-list {
-    margin-top: 50px;
+    margin-top: 0;
   }
 }
 
