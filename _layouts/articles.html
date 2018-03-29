@@ -13,19 +13,39 @@
     <meta name="google-site-verification" content="0Y6lNjU4UQASxsWfYD9Q1SQpLvvHkGmHqF8pXDHfogI" />
 
     <link href='https://fonts.googleapis.com/css?family=Poly' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/post.css">
 
     <script type="text/javascript" async="" src="https://www.google-analytics.com/ga.js"></script>
 </head>
 
 <body id="www-billgranfield-com">
 
+<!-- Black borders around the content -->
 <b id="top"></b>
 <b id="right"></b>
 <b id="bottom"></b>
 <b id="left"></b>
 
-{{ content }}
+<!-- Used to hide the margins -->
+<b id="top-bg"></b>
+<b id="bottom-bg"></b>
+
+<div class="articles-container">
+  <div class="articles-list">
+    <div class="articles-header">
+      <h1 class="articles-header-name">
+        <a href="/index.html">bill granfield</a>
+      </h1>
+      <h2 class="articles-header-title">
+        <a href="/articles.html">articles</a>
+      </h2>
+    </div>
+
+    {{ content }}
+
+  </div>
+</div>
 
 <script>
   var _gaq = _gaq || [];

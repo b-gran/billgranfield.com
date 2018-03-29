@@ -3,45 +3,32 @@ layout: articles
 title: Bill Granfield - Software Engineering
 ---
 
-<div class="articles-container">
-  <div class="articles-list">
-    <div class="articles-header">
-      <h1 class="articles-header-name">
-        <a href="/index.html">bill granfield</a>
-      </h1>
-      <h2 class="articles-header-title">
-        <a href="/articles.html">articles</a>
-      </h2>
+{% for post in site.posts  %}
+  {% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
+  {% capture next_year %}{{ post.previous.date | date: "%Y" }}{% endcapture %}
+
+  {% if forloop.first %}
+    <div class="article-year-wrap">
+      <h2 class="article-year" id="{{ this_year }}-ref">{{this_year}}</h2>
+      <ul class="article-wrap">
+  {% endif %}
+
+  <li class="article-row">
+    <a href="{{ post.url }}">{{ post.title }}</a>
+    <span class="article-date">{{ post.date | date_to_string }}</span>
+    <a class="article-read" href="{{ post.url }}">Read ↦</a>
+  </li>
+
+  {% if forloop.last %}
+    </ul>
     </div>
-  
-    {% for post in site.posts  %}
-      {% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
-      {% capture next_year %}{{ post.previous.date | date: "%Y" }}{% endcapture %}
-
-      {% if forloop.first %}
-        <div class="article-year-wrap">
-          <h2 class="article-year" id="{{ this_year }}-ref">{{this_year}}</h2>
-          <ul class="article-wrap">
-      {% endif %}
-
-      <li class="article-row">
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <span class="article-date">{{ post.date | date_to_string }}</span>
-        <a class="article-read" href="{{ post.url }}">Read ↦</a>
-      </li>
-
-      {% if forloop.last %}
-        </ul>
-        </div>
-      {% else %}
-        {% if this_year != next_year %}
-          </ul>
-          </div>
-          <div class="article-year-wrap">
-            <h2 class="article-year" id="{{ next_year }}-ref">{{next_year}}</h2>
-            <ul class="article-wrap">
-        {% endif %}
-      {% endif %}
-    {% endfor %}
-  </div>
-</div>
+  {% else %}
+    {% if this_year != next_year %}
+      </ul>
+      </div>
+      <div class="article-year-wrap">
+        <h2 class="article-year" id="{{ next_year }}-ref">{{next_year}}</h2>
+        <ul class="article-wrap">
+    {% endif %}
+  {% endif %}
+{% endfor %}
