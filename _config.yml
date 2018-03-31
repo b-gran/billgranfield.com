@@ -2,7 +2,7 @@
 title: Bill Granfield
 email: bill@billgranfieldcom
 description: >
-  A blog about computer science, maths, and medicine.
+  Articles by Bill Granfield
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: b-gran
