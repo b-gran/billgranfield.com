@@ -1,6 +1,11 @@
 ---
 layout: post
 title:  Using the React Test Renderer to write unit tests
+description: |
+  A guide to writing unit tests using only the React Test Renderer.
+
+  Includes sample code and additional API documentation for the
+  React Test Renderer APIs.
 ---
 
 # Using the React Test Renderer to write unit tests
