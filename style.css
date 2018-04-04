@@ -441,10 +441,15 @@ a {
   margin: 100px 80px 80px 80px;
 }
 
-/* Articles at the top of screen on mobile */
+/* Articles on mobile */
 @media screen and (max-width: 768px), screen and (max-device-width: 480px) {
   .articles-list {
-    margin-top: 0;
+    margin: 0 10px 20px 20px;
+  }
+
+  /* Articles should take up the entire screen */
+  .articles-container {
+    display: block;
   }
 }
 

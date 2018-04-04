@@ -6,3 +6,11 @@
   max-width: 800px;
   font-family: Montserrat, serif;
 }
+
+/* Hide post borders on narrow screens */
+@media screen and (max-width: 930px), screen and (max-device-width: 480px) {
+  #top, #bottom, #left, #right,
+  #top-bg, #bottom-bg, #left-bg, #right-bg {
+    display: none;
+  }
+}
