@@ -44,7 +44,7 @@ npm install -D react-test-renderer
 
 First, we need a component to test. We'll test a simple Checkbox component that renders a checkbox input & label.
 
-```javascript
+```jsx
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -75,7 +75,7 @@ Checkbox.propTypes = {
 
 The value returned by `TestRenderer.create` isn't very useful on its own.  In order to make assertions about the rendered markup, we'll need to use either `testRenderer.root` or `TestRenderer.getInstance()` to acquire a node we can make assertions on.
 
-```javascript
+```jsx
 // Render the component in memory
 const tree = TestRenderer.create(
   <Checkbox text="a checkbox" onChange={() => {}} checked={true} />
@@ -88,7 +88,7 @@ const tree = TestRenderer.create(
 ##### `testRenderer.root` vs `testRenderer.getInstance()` 
 `testRenderer.root` will _always_ return a test instance, even if the root of the tree is a functional component or DOM node.
 
-```javascript
+```jsx
 // Just a stateless functional component
 const SomeSFC = () => <p>hello world</p>
 
@@ -125,7 +125,7 @@ If the predicate does not match any node in the tree, the method will **throw** 
 We will need to write our own simple helper to traverse text nodes.
 
 **Helper for searching text nodes**
-```javascript
+```jsx
 // Returns a TestInstance#find() predicate that passes
 // all test instance children (including text nodes) through
 // the supplied predicate, and returns true if one of the
@@ -141,7 +141,7 @@ function findInChildren (predicate) {
 ```
 
 **Searching the component tree for text**
-```javascript
+```jsx
 it('renders the supplied text somewhere in the tree', () => {
   const text = 'a checkbox'
   const tree = TestRenderer.create(
@@ -173,7 +173,7 @@ Both of these assertions **will fail if more than one node matches.**
 
 To find _all_ nodes matching a specific property, see [`testInstance.findAllByType`](https://reactjs.org/docs/test-renderer.html#testinstancefindallbytype) and [`testInstance.findAllByProps`](https://reactjs.org/docs/test-renderer.html#testinstancefindallbyprops).
 
-```javascript
+```jsx
 it('renders exactly one checked <input />', () => {
   const tree = TestRenderer.create(
     <Checkbox text="a checkbox" onChange={() => {}} checked={true} />
@@ -217,7 +217,7 @@ it('renders exactly one checked <input />', () => {
 ### Performing restricted searches of the tree
 A common use case in component tests is searching for nodes within some other node's children. We can do these restricted searches by first `.find()`ing a node of interest, and then calling `.find()` on that node. 
 
-```javascript
+```jsx
 it('renders the <input /> within a <label />', () => {
   const tree = TestRenderer.create(
     <Checkbox text="a checkbox" onChange={() => {}} checked={true} />
@@ -244,7 +244,7 @@ The test utils will not propagate events, so we need to find the actual leaf nod
 
 We will use `ReactTestUtils.findRenderedDOMComponentWithTag()` to find particular types of DOM elements in the rendered component tree.
 
-```javascript
+```jsx
 it('correctly responds to change events', () => {
   const checked = false
   const changeHandler = jest.fn()
