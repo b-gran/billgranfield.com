@@ -134,17 +134,83 @@ You can stop the running container with
 docker kill $your_container_name
 ```
 
-## What do we mean by _"broken"_
+## Data recovery if the Docker daemon will not start
+Data recovery is much more difficult if the Docker daemon isn't starting up correctly. In some cases, the HyperKit VM will start, but it will not be able to load the `qcow2` image containing the container data.
 
-For the purposes of this guide, a Docker installation is called _broken_ if the Docker daemon is unable to start, e.g.
-* the Docker daemon hangs when starting up
-* the Docker daemon exits during startup
-* the Docker daemon does not even begin to start up
+The basic idea here is:
+0. Install dependencies (there are several)
+1. Convert the `qcow2` image to a FUSE filesystem
+2. Mount the FUSE filesystem
+3. Copy the data out of the FUSE filesystem onto the host
 
-If your Docker installation is _missing files_, you probably will not be able to follow up.
+We'll be using [qcow2-fuse](https://github.com/vasi/qcow2-fuse) to convert the `Docker.qcow2` to a FUSE filesystem and [ext4fuse](https://github.com/gerard/ext4fuse) to mount the FUSE filesystem on MacOS. We'll also need [osxfuse](https://osxfuse.github.io/) which is a dependency of the other tools.
 
-If you are able to start the Docker daemon, there are simpler and more reliable guides you can follow to recover data, e.g.
-* [Recover orphaned volumes](http://blog.idetailaid.co.uk/how-to-recover-an-orphaned-docker-volume-for-a-data-container/)
-* 
+### 0 Installing dependencies
+Homebrew is required to complete the following steps.
 
-## How data is stored in Docker
+##### `osxfuse`
+First, we'll need `osxfuse`. You can download the latest installer from [their downloads page](https://github.com/osxfuse/osxfuse/releases), or run the following command:
+```bash
+brew cask install osxfuse
+```
+
+`osxfuse` is a generic library for working with FUSE filesystems on MacOS.
+
+##### `ext4fuse`
+Next, we'll install `ext4fuse`:
+```bash
+brew install ext4fuse
+```
+
+`ext4fuse` is a tool for mounting FUSE filesystems on MacOS.
+
+##### `qcow2-fuse`
+Finally, we'll install `qcow2-fuse`. `qcow2-fuse` requires `pkg-config` -- if you don't already have it installed, run
+```bash
+brew install pkg-config
+```
+
+`qcow2-fuse` is a tool for converting `qcow2` images into FUSE filesystems.
+
+###### Setting up the correct Rust version
+`qcow2-fuse` is built with [Rust](https://www.rust-lang.org/en-US/). We'll also need a Rust specific version: 1.11.0.
+To install Rust, we'll be using [rustup](https://rustup.rs/), a Rust version manager.
+To install `rustup`, run the following command:
+```bash
+curl https://sh.rustup.rs -sSf | sh
+```
+
+Once `rustup` is installed, we can set the Rust version (`rustup` will download the necessary binaries):
+```bash
+rustup default 1.11.0
+```
+
+Make sure the correct Rust version is installed by running 
+```bash
+rustc --version
+```
+
+###### Building `qcow2-fuse`
+We're now ready to install `qcow2-fuse`. Unfortunately, the published `cargo` package will no longer build, so we'll be building `qcow2-fuse` from source.
+First, choose a directory somewhere to clone the `qcow2-fuse` repository. It's not especially important to keep this directory around, so a temp directory is fine.
+Then, clone the `qcow2-fuse` repository and `cd` into it:
+```bash
+git clone https://github.com/vasi/qcow2-fuse.git
+cd qcow2-fuse
+```
+
+Now we can build `qcow2-fuse` by running the following command from the `qcow2-fuse` repo root:
+```bash
+# Ensure you're in the root of the qcow2-fuse repo
+# cd qcow2-fuse
+
+cargo install
+```
+
+`cargo` will place the `qcow2-fuse` binaries in `$HOME/.cargo/bin` by default, and this should be on your `$PATH`. 
+If not, add `$HOME/.cargo/bin` to your `$PATH`, or copy the binary to some known location.
+
+Verify that `qcow2-fuse` was built correctly by running 
+```bash
+qcow2-fuse --version
+```
