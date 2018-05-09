@@ -2,7 +2,7 @@
 layout: post
 title: Recovering data from a broken MacOS Docker installation
 description: |
-  How to recover and retrieve data (images and volumes) from broken or corrupt MacOS Docker installation.
+  How to recover and restore data (images and volumes) from broken or corrupt MacOS Docker installations.
 ---
 
 # Recovering data from a broken MacOS Docker installation
