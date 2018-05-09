@@ -139,7 +139,7 @@ Data recovery is much more difficult if the Docker daemon isn't starting up corr
 
 The basic idea here is:
 0. Install dependencies (there are several)
-1. Convert the `qcow2` image to a FUSE filesystem
+1. Convert the `qcow2` image to a FUSE filesystem image
 2. Mount the FUSE filesystem
 3. Copy the data out of the FUSE filesystem onto the host
 
@@ -214,3 +214,79 @@ Verify that `qcow2-fuse` was built correctly by running
 ```bash
 qcow2-fuse --version
 ```
+
+### 1 Convert the `qcow2` image to a FUSE filesystem image
+Before we can mount the Docker VM image, we need to convert it into a format we are able to mount.
+
+Copy your `Docker.qcow2` somewhere. You'll be creating a FUSE filesystem image in the same directory.
+
+The following command converts the `qcow2` image to a FUSE filesystem image located in the `mnt` directory relative to the current directory:
+```bash
+qcow2-fuse -o allow_other -o rdonly Docker.qcow2 mnt
+```
+
+The `-o allow_other -o rdonly` flags specify that any user account should be able to access the FUSE image, and that the FUSE filesystem should be read-only.
+
+After running the command, a `mnt` directory containing the FUSE image (a file called `Docker`) should be present in the current directory.
+
+### 2 Mount the FUSE filesystem image
+We're now ready mount the FUSE image as a volume. 
+
+The first step is to `attach` the FUSE image as a device. The following command (which assumes there's a FUSE image called `Docker` in the `mnt` directory) will attach the FUSE image as a device:
+```bash
+hdiutil attach -imagekey diskimage-class=CRawDiskImage -nomount mnt/Docker
+```
+
+MacOS doesn't know how to mount FUSE images, so the `-nomount` flag is required.
+The output of the command will look something like this:
+```bash
+/dev/disk4              FDisk_partition_scheme
+/dev/disk4s1            Linux_Swap
+/dev/disk4s2            Linux
+```
+
+We're interested in the line that looks like this:
+```bash
+/dev/disk4s2            Linux
+```
+which is path to the EXT4 partition of the FUSE image.
+
+We're now ready to mount the FUSE filesystem. Run the following command, replacing `/dev/disk4s2` with correct EXT4 device for your system:
+```bash
+sudo ext4fuse /dev/disk4s2 volume
+```
+
+This command mounts the EXT4 partition at the path `volume` relative to the current directory.
+After running this command, the `Docker.qcow2` filesystem is **mounted and accessible as a normal filesystem at the `volume` path**.
+
+### 3 Copy the data out of the FUSE filesystem onto the host
+We're finally ready to copy the data out of the Docker VM image.
+
+We can use ordinary *nix tools to work with this filesystem. We will need to run these commands as `sudo`. 
+```bash
+# List the files at the root of the FUSE filesystem
+sudo ls -al volume
+
+# Copy all of the volumes on the FUSE filesystem into the current directory
+sudo cp -R volume/lib/docker/volumes ./docker_volumes
+```
+
+Depending on your Docker/HyperKit version, the contents of your FUSE filesystem may differ. You should explore the filesystem to figure out exactly where your volume data resides.
+
+The `ext4fuse` is pretty unreliable, and during the course of interacting with the FUSE filesystem, you may see errors like this:
+```bash
+$ sudo ls volume/lib
+ls: volume/lib: Device not configured
+```
+
+To resolve this issue, simply unmount and then remount the EXT4 volume (where `volume` is the path to the EXT4 volume you mounted in the previous step):
+```bash
+$ sudo diskutil unmount volume
+Unmount successful for volume
+
+$ sudo ext4fuse /dev/disk4s2 volume
+```
+
+## Wrapping up
+With the volume data copied to your host filesystem, you can restore the volume at your leisure. 
+Using these methods, you can backup and recover your Docker data whether or not the HyperKit VM is actually able to start.
